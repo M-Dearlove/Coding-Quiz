@@ -20,19 +20,11 @@ jobs:
         with:
           node-version: 21.x
 
-      - name: Set up TypeScript
-        run: npm install -g ts-node
-
       - name: Install client dependencies
         run: cd client && npm install
 
       - name: Install server dependencies
         run: cd server && npm install
-
-      - name: Register ts-node for Cypress
-        run: |
-          echo "require('ts-node/register');" > cypress-ts-preprocessor.js
-          echo "module.exports = require('./cypress.config.ts');" >> cypress-ts-preprocessor.js
 
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.10.0
@@ -69,5 +61,5 @@ jobs:
           fi
 
       - name: Run vitest tests
-        run: CYPRESS_CONFIG_FILE=cypress-ts-preprocessor.js npm run test
+        run: npm run test
 
