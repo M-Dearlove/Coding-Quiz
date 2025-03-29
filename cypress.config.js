@@ -1,25 +1,4 @@
 const { defineConfig } = require('cypress');
-const path = require('path');
-
-let viteConfig;
-try {
-  viteConfig = require('./client/vite.config').default;
-} catch (e) {
-  viteConfig = {
-    plugins: [],
-    server: {
-      port: 3000,
-      open: true,
-      proxy: {
-        '/api': {
-          target: 'http://localhost:3001',
-          changeOrigin: true,
-          secure: false,
-        },
-      },
-    },
-  };
-}
 
 module.exports = defineConfig({
   component: {
@@ -27,7 +6,6 @@ module.exports = defineConfig({
     devServer: {
       framework: 'react',
       bundler: 'vite',
-      viteConfig,
     },
   },
 

@@ -26,6 +26,12 @@ jobs:
       - name: Install server dependencies
         run: cd server && npm install
 
+      - name: Verify Cypress installation
+        run: npx cypress verify
+
+      - name: Install Cypress binary if needed
+        run: npx cypress install
+
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.10.0
         with:
