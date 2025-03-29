@@ -20,8 +20,47 @@ jobs:
         with:
           node-version: 21.x
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install client dependencies
+        run: cd client && npm install
+
+      - name: Install server dependencies
+        run: cd server && npm install
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
+        with:
+          mongodb-version: 6.0
+          mongodb-port: 27017
+
+      - name: Build server
+        run: cd server && npm run build
+
+      - name: Seed database
+        run: cd server && npm run seed
+        
+      # Start the server in background
+      - name: Start server
+        run: cd server && npm start &
+        # Give the server time to start up
+        env:
+          MONGODB_URI: mongodb://127.0.0.1:27017/techquiz
+
+      - name: Wait for server
+        run: |
+          echo "Waiting for server to start..."
+          timeout=60
+          counter=0
+          while ! curl -s http://localhost:3001/api/questions/random > /dev/null && [ $counter -lt $timeout ]; do
+            sleep 1
+            counter=$((counter+1))
+            echo "Waiting... ($counter/$timeout)"
+          done
+          if [ $counter -lt $timeout ]; then
+            echo "Server started successfully!"
+          else
+            echo "Server failed to start within timeout period"
+            exit 1
+          fi
 
       - name: Run vitest tests
         run: npm run test
