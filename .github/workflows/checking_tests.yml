@@ -29,6 +29,11 @@ jobs:
       - name: Install server dependencies
         run: cd server && npm install
 
+      - name: Register ts-node for Cypress
+        run: |
+          echo "require('ts-node/register');" > cypress-ts-preprocessor.js
+          echo "module.exports = require('./cypress.config.ts');" >> cypress-ts-preprocessor.js
+
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.10.0
         with:
@@ -41,10 +46,8 @@ jobs:
       - name: Seed database
         run: cd server && npm run seed
         
-      # Start the server in background
       - name: Start server
         run: cd server && npm start &
-        # Give the server time to start up
         env:
           MONGODB_URI: mongodb://127.0.0.1:27017/techquiz
 
@@ -66,5 +69,5 @@ jobs:
           fi
 
       - name: Run vitest tests
-        run: npm run test
+        run: CYPRESS_CONFIG_FILE=cypress-ts-preprocessor.js npm run test
 
